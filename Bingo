@@ -1,173 +1,176 @@
 const bingo = () => {
-    let acquireNumber = [];
-    let bingoCard = [];
-    let bingoNumbers = [];
-    let letters = /^[A-Za-z]+$/;
-    let playersName;
-  
-    const welcomeMessage = () => {
-      if (playersName) {
-        alert(`Hello ${playersName}! Let's start game!`);
-        return;
+  let acquireNumber = [];
+  let bingoCard = [];
+  let bingoNumbers = [];
+  let letters = /^[A-Za-z]+$/;
+  let playersName;
+
+  const welcomeMessage = () => {
+    if (playersName) {
+      alert(`Hello ${playersName}! Let's start game!`);
+      return;
+    }
+  };
+
+  const goodbyeMessage = (access) => {
+    if (access === null || access === undefined || !access) {
+      console.log("Thanks for playing Bingo ISDI, see you later!");
+
+      return;
+    }
+  };
+  const invalidInput = () => {
+    const messageInvalid = alert("Invalid value try again please.");
+  };
+  const confirmNextTurn = () => {
+    return confirm("Do you want to play another turn?");
+  };
+  const requestName = () => {
+    playersName = prompt(`Welcome to Bingo ISDI! Please enter your name:`);
+    if (playersName === null) {
+      goodbyeMessage(playersName);
+      return;
+    }
+    if (!letters.test(playersName)) {
+      invalidInput();
+      requestName();
+      return;
+    } else {
+      welcomeMessage();
+    }
+  };
+  const generedCard = () => {
+    bingoCard = [];
+    while (bingoCard.length < 15) {
+      let bingoNumbers = Math.floor(Math.random() * 90) + 1;
+      if (!bingoCard.includes(bingoNumbers)) {
+        bingoCard.push(bingoNumbers);
       }
-    };
-  
-    const goodbyeMessage = (access) => {
-      if (access === null || access === undefined || !access) {
-        console.log("Thanks for playing Bingo ISDI, see you later!");
-  
-        return;
-      }
-    };
-    const invalidInput = () => {
-      const messageInvalid = alert("Invalid value try again please.");
-    };
-    const confirmNextTurn = () => {
-      return confirm("Do you want to play another turn?");
-    };
-    const requestName = () => {
-      playersName = prompt(`Welcome to Bingo ISDI! Please enter your name:`);
-      if (playersName === null) {
-        goodbyeMessage(playersName);
-        return;
-      }
-      if (!letters.test(playersName)) {
-        invalidInput();
-        requestName();
-        return;
-      } else {
-        welcomeMessage();
-      }
-    };
-    const generedCard = () => {
-      bingoCard = [];
-      while (bingoCard.length < 15) {
-        let bingoNumbers = Math.floor(Math.random() * 90) + 1;
-        if (!bingoCard.includes(bingoNumbers)) {
-          bingoCard.sort((a, b) => a - b).push(bingoNumbers);
-        }
-      }
-      bingoCard.sort((a, b) => a - b);
-      printCard();
-      askBingoCard();
-    };
-  
-    const printCard = () => {
-      console.log("-------------------");
-      console.log(`B\tI\tN\tG\tO`);
-      for (let i = 0; i < 3; i++) {
-        let row = [];
-        for (let j = 0; j < 5; j++) {
-          row.push(bingoCard[j + i * 5]);
-        }
-  
-        console.log(`|${row.join("|")}|`);
-      }
-      console.log("-------------------");
-    };
-  
-    const sortedNumber = () => {
-      let drawnNumber;
-      do {
-        drawnNumber = Math.floor(Math.random() * 90) + 1;
-      } while (acquireNumber.includes(drawnNumber));
-      acquireNumber.push(drawnNumber);
-      alert(`Number drawn is ${drawnNumber}!`);
-      return drawnNumber;
-    };
-  
-  const checkForLineWinner = () => {
+    }
+    bingoCard.sort((a, b) => a - b);
+    printCard();
+    askBingoCard();
+  };
+
+  const printCard = () => {
+    console.log("-------------------");
+    console.log(`B\tI\tN\tG\tO`);
     for (let i = 0; i < 3; i++) {
-      if (bingoCard.slice(i * 5, i * 5 + 5).every((number) => number === "X")) {
+      let row = [];
+      for (let j = 0; j < 5; j++) {
+        row.push(bingoCard[j + i * 5]);
+      }
+
+      console.log(`|${row.join("|")}|`);
+    }
+    console.log("-------------------");
+  };
+
+  const sortedNumber = () => {
+    let drawnNumber;
+    do {
+      drawnNumber = Math.floor(Math.random() * 90) + 1;
+    } while (acquireNumber.includes(drawnNumber));
+    acquireNumber.push(drawnNumber);
+    alert(`Number drawn is ${drawnNumber}!`);
+    return drawnNumber;
+  };
+
+  const checkForLineWinner = () => {
+    const cardsRows = [ //Esta parte no se como manejarla en la funcion sig.
+      bingoCard.slice(0, 5),
+      bingoCard.slice(5, 10),
+      bingoCard.slice(10, 15),
+    ];
+
+    for (let i = 0; i < cardsRows.length; i++) {
+      const line = cardsRows[i];
+
+      if (line.every((num) => num === "X")) {
         return true;
       }
     }
+
     return false;
   };
-  const checkForBingoWinner = () => {
-    return bingoCard.every((number) => number === "X");
-  };
-  
   const playGame = () => {
     let gameOver = false;
+    let lineWinner = false;
     let numberMarked = 0;
-  
+    let lineWinnerCount = 0;
+
     while (!gameOver) {
       let raffledNumber = sortedNumber();
       if (bingoCard.includes(raffledNumber)) {
         let indexNumberSorted = bingoCard.indexOf(raffledNumber);
         bingoCard[indexNumberSorted] = "X";
         numberMarked++;
-  
+
         console.log(`Yoo-hoo! ${playersName} number found ${raffledNumber}!`);
       } else {
         console.log(
           `${playersName} number ${raffledNumber} not found. Good luck next time!!`
         );
       }
-  
+      console.log("This is the update of your card:");
       printCard();
-      let lineWinner = false;
-      let bingoWinner = false;
-      
-      if (checkForLineWinner()) {
-        console.log(`${playersName} 🏆 winning LINE!`);
-      return lineWinner = true,
-        
-      }
-      
-      if (checkForLineWinner() && !lineWinner && !bingoWinner) {
-        console.log(`${playersName} 🏆 winning LINE!`);
-        return lineWinner = true,
 
+      // Check for line winner //Estos if obvio no estan vien porque solo canta la primera linea siempre y la segunda nunca asi salga el bingo.
+      if (lineWinnerCount <= 1) {
+        checkForLineWinner();
       }
-      
-      if (checkForBingoWinner()) {
-        console.log(`${playersName} BINGO! 🏆`);
-       return bingoWinner = true,
-       
-      }
-      
-      let continuePlaying = letsPlayAnotherMatch();
-      if (!continuePlaying) {
-        gameOver = true;
-        return;
+      if (lineWinnerCount === 0) {
+        console.log(`${playersName} \u{1F3C6} winning LINE!`);
+        lineWinnerCount++;
+      } else if (lineWinner === 1) {
+        lineWinnerCount++;
+      } else {
+        console.log("¡BINGO! \u{1F3C6}");
       }
     }
+
+    let continuePlaying = letsPlayAnotherMatch();
+    if (!continuePlaying) {
+      gameOver = true;
+      return;
+    }
+    if (checkForLineWinner()) {
+      gameOver = true;
+      return;
+    }
   };
-  
-  
-    const askBingoCard = () => {
-      const likesbingocard = confirm("Do you like this card?");
-      if (likesbingocard) {
-        alert("Perfect! May luck be with you \u2618!!");
-        playGame(bingoCard);
-        return;
-      } else {
-        generedCard();
-      }
-    };
-    const letsPlayAnotherMatch = () => {
-      const continueOrCancel = confirm("Do you want to play another turn?");
-  
-      if (continueOrCancel) {
-        playGame();
-      } else {
-        askIfYouWantToQuitTheGame();
-      }
-    };
-    const askIfYouWantToQuitTheGame = () => {
-      const askConfirmation = confirm(
-        "Are you sure you want to abandon the game?"
-      );
-      if (askConfirmation) {
-        goodbyeMessage();
-        return;
-      } else {
-        playGame();
-      }
-    };
-    requestName();
-    generedCard();
+
+  const askBingoCard = () => {
+    const likesbingocard = confirm("Do you like this card?");
+    if (likesbingocard) {
+      alert("Perfect! May luck be with you \u2618!!");
+      playGame(bingoCard);
+      return;
+    } else {
+      generedCard();
+    }
   };
-  bingo();
+  const letsPlayAnotherMatch = () => {
+    const continueOrCancel = confirm("Do you want to play another turn?");
+
+    if (continueOrCancel) {
+      playGame();
+    } else {
+      askIfYouWantToQuitTheGame();
+    }
+  };
+  const askIfYouWantToQuitTheGame = () => {
+    const askConfirmation = confirm(
+      "Are you sure you want to abandon the game?"
+    );
+    if (askConfirmation) {
+      goodbyeMessage();
+      return;
+    } else {
+      playGame();
+    }
+  };
+  requestName();
+  generedCard();
+};
+bingo();
